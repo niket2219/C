@@ -32,9 +32,16 @@ export default function Chat() {
   useEffect(() => {
     if (currentUser) {
       socket.current = io(host);
-      socket.current.emit("add-user", currentUser._id);
+      socket.current.emit("add", currentUser._id);
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    if (currentChat) {
+      socket.current = io(host);
+      socket.current.emit("add-user", currentChat._id);
+    }
+  }, [currentChat]);
 
   useEffect(async () => {
     if (currentUser) {

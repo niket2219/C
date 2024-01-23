@@ -23,6 +23,7 @@ export default function ChatContainer({ currentChat, socket }) {
   };
 
   useEffect(async () => {
+    console.log("useeffect1");
     const data = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
     );
@@ -34,6 +35,7 @@ export default function ChatContainer({ currentChat, socket }) {
   }, [currentChat]);
 
   useEffect(() => {
+    console.log("useeffect2");
     const getCurrentChat = async () => {
       if (currentChat) {
         await JSON.parse(
@@ -74,7 +76,9 @@ export default function ChatContainer({ currentChat, socket }) {
   };
 
   useEffect(() => {
+    console.log("useeffect3....");
     if (socket.current) {
+      console.log("msg_recievr onn");
       socket.current.on("msg-recieve", (msg) => {
         setArrivalMessage({ fromSelf: false, message: msg });
         recSound();

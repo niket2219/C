@@ -5,6 +5,7 @@ import Logout from "./Logout";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import Bg from "../assets/chat_bg_img.jpeg";
+import { leavegroupRoute } from "../utils/APIRoutes";
 
 export default function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
@@ -34,9 +35,9 @@ export default function ChatContainer({ currentChat, socket }) {
     const data = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
     );
-    socket.current.emit("send-msg", {
-      grpId: currentChat._id,
-      sender: data.username,
+    socket.current.emit("send-grp-msg", {
+      to: currentChat._id,
+      from: data._id,
       message: msg,
     });
     await axios.post(
@@ -47,8 +48,6 @@ export default function ChatContainer({ currentChat, socket }) {
         message: msg,
       }
     );
-    console.log("message sent");
-
     const msgs = [...messages];
     msgs.push({ grpId: currentChat._id, sender: data.username, message: msg });
     setMessages(msgs);
@@ -56,19 +55,29 @@ export default function ChatContainer({ currentChat, socket }) {
 
   useEffect(() => {
     if (socket.current) {
-      socket.current.on("msg-recieve", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg });
+      socket.current.on("grp-msg-recieve", (data) => {
+        setArrivalMessage(data);
       });
     }
   }, []);
 
   useEffect(() => {
-    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+    arrivalMessage && setMessages([...messages, arrivalMessage]);
   }, [arrivalMessage]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const leavegroup = async () => {
+    const data = await JSON.parse(
+      localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+    );
+    const res = await axios.get(
+      `${leavegroupRoute}/${currentChat._id}/${data.username}`
+    );
+    console.log(res);
+  };
 
   return (
     <Container>
@@ -79,6 +88,7 @@ export default function ChatContainer({ currentChat, socket }) {
           </div>
         </div>
         <Logout />
+        <button onClick={leavegroup}>leave grp</button>
       </div>
       <div className="chat-messages">
         {messages.map((message) => {

@@ -36,16 +36,26 @@ const io = socket(server, {
 });
 
 global.onlineUsers = new Map();
+global.users = new Map();
+
 io.on("connection", (socket) => {
   global.chatSocket = socket;
   socket.on("add-user", (userId) => {
     onlineUsers.set(userId, socket.id);
   });
 
+  socket.on("add", (userId) => {
+    users.set(userId, socket.id);
+  });
+
   socket.on("send-msg", (data) => {
-    const sendUserSocket = onlineUsers.get(data.to);
+    const sendUserSocket = users.get(data.to);
     if (sendUserSocket) {
       socket.to(sendUserSocket).emit("msg-recieve", data.msg);
     }
+  });
+
+  socket.on("send-grp-msg", (data) => {
+    socket.broadcast.emit("grp-msg-recieve", data);
   });
 });

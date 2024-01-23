@@ -9,3 +9,4 @@ export const setAvatarRoute = `${host}/api/auth/setavatar`;
 export const forgot_passwordRoute = `${host}/api/auth/forgot_password`;
 export const verifyOtpRoute = `${host}/api/auth/verifyOtp`;
 export const changePasswordRoute = `${host}/api/auth/changePassword`;
+export const leavegroupRoute = `${host}/api/messages/leavegrp`;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Logo from "../assets/brand.png";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
 import axios from "axios";
 
 export default function Contacts({ groups, changeChat }) {
@@ -11,9 +11,11 @@ export default function Contacts({ groups, changeChat }) {
   const [currentchat, setcurrentchat] = useState(undefined);
   const [show, setshow] = useState(false);
   const [show1, setshow1] = useState(false);
+  const [show2, setshow2] = useState(false);
   const [cname, setcname] = useState("");
   const [grpname, setgrpname] = useState("");
   const [userTobeAdded, setuserTobeAdded] = useState(undefined);
+  const [invites, setinvites] = useState(undefined);
 
   useEffect(async () => {
     const data = await JSON.parse(
@@ -21,6 +23,21 @@ export default function Contacts({ groups, changeChat }) {
     );
     setCurrentUserName(data.username);
     setCurrentUserImage(data.avatarImage);
+  }, []);
+
+  useEffect(async () => {
+    const data = await axios.get(
+      `http://localhost:5000/api/messages/fetchrequests/${
+        JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))
+          .username
+      }`
+    );
+
+    if (data.data.msg != false) {
+      console.log(data.data.data[0]);
+      setinvites(data.data.data);
+      setshow2(true);
+    }
   }, []);
 
   const handleModal = () => {
@@ -37,6 +54,7 @@ export default function Contacts({ groups, changeChat }) {
     });
     console.log(data);
     setshow(false);
+    window.location.reload(true);
   };
 
   const changeCurrentChat = (index, contact) => {
@@ -50,10 +68,35 @@ export default function Contacts({ groups, changeChat }) {
   const handleaddUser = async () => {
     const response = await axios.post(
       `http://localhost:5000/api/messages/addtogrp`,
-      { user: userTobeAdded, group_id: currentchat._id }
+      {
+        user: JSON.parse(
+          localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+        ).username,
+        mem: userTobeAdded,
+        group_id: currentchat._id,
+      }
     );
     console.log(response);
     setshow1(false);
+  };
+
+  const acceptjoinreq = async () => {
+    const data = axios.post(`http://localhost:5000/api/messages/acceptreq`, {
+      user: invites[0].to,
+      grpId: invites[0].grpId,
+      status: true,
+    });
+    setshow2(false);
+    alert("added to group");
+  };
+  const declinejoinreq = async () => {
+    const data = axios.post(`http://localhost:5000/api/messages/acceptreq`, {
+      user: invites[0].to,
+      grpId: invites[0].grpId,
+      status: false,
+    });
+    setshow2(false);
+    alert("rejected the invite");
   };
 
   return (
@@ -75,11 +118,11 @@ export default function Contacts({ groups, changeChat }) {
                   onClick={() => changeCurrentChat(index, contact)}
                 >
                   <div className="username">
-                    <h3>{contact.name}</h3>
+                    <h4>{contact.name}</h4>
                   </div>
-                  <div>
-                    <button
-                      style={{ height: "25px" }}
+                  <div className="text-right">
+                    <Button
+                      variant="primary"
                       onClick={() => setshow1(true)}
                       className={`${
                         contact.creator ==
@@ -93,16 +136,18 @@ export default function Contacts({ groups, changeChat }) {
                       }`}
                     >
                       + add user
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );
             })}
-            <Modal show={show1}>
-              <Modal.Header>Enter Details</Modal.Header>
+            <Modal show={show1 && invites}>
+              <Modal.Header closeButton>Enter Group Details</Modal.Header>
               <Modal.Body>
-                <label for="useradd">Enter user id</label>
-                <input
+                <Form.Label htmlFor="useradd">
+                  Enter username to be added :{" "}
+                </Form.Label>
+                <Form.Control
                   name="useradd"
                   id="useradd"
                   onChange={(e) => {
@@ -111,17 +156,24 @@ export default function Contacts({ groups, changeChat }) {
                 />
               </Modal.Body>
               <Modal.Footer>
-                <Button onClick={() => handleaddUser()}>Create</Button>
+                <Button variant="danger" onClick={() => setshow1(false)}>
+                  Cancel
+                </Button>
+                <Button variant="success" onClick={() => handleaddUser()}>
+                  Add
+                </Button>
               </Modal.Footer>
             </Modal>
           </div>
           <div className="current-user">
             <Button onClick={handleModal}>Create Group</Button>
             <Modal show={show}>
-              <Modal.Header>Enter Details</Modal.Header>
+              <Modal.Header closeButton>Enter Details</Modal.Header>
               <Modal.Body>
-                <label for="grpname">Enter the name of the group</label>
-                <input
+                <Form.Label htmlFor="grpname">
+                  Enter the name of the group :{" "}
+                </Form.Label>
+                <Form.Control
                   name="grpname"
                   id="grpname"
                   style={{ margin: "10px" }}
@@ -129,8 +181,9 @@ export default function Contacts({ groups, changeChat }) {
                     setgrpname(e.target.value);
                   }}
                 />
-                <label for="cname">Enter your id</label>
-                <input
+                <Form.Label htmlFor="cname">Enter your id : </Form.Label>
+                <Form.Control
+                  className="m-2"
                   name="cname"
                   id="cname"
                   onChange={(e) => {
@@ -139,7 +192,29 @@ export default function Contacts({ groups, changeChat }) {
                 />
               </Modal.Body>
               <Modal.Footer>
-                <Button onClick={addGrp}>Create</Button>
+                <Button variant="danger" onClick={() => setshow(false)}>
+                  Cancel
+                </Button>
+                <Button variant="warning" onClick={addGrp}>
+                  Create
+                </Button>
+              </Modal.Footer>
+            </Modal>
+            <Modal show={show2}>
+              <Modal.Header closeButton>Group Invite</Modal.Header>
+              <Modal.Body>
+                <p>
+                  You have got a group invite from <br></br>Do You want to
+                  accept ?
+                </p>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="danger" onClick={() => declinejoinreq()}>
+                  Reject
+                </Button>
+                <Button variant="success" onClick={() => acceptjoinreq()}>
+                  Accept
+                </Button>
               </Modal.Footer>
             </Modal>
           </div>
@@ -197,7 +272,7 @@ const Container = styled.div`
         }
       }
       .username {
-        h3 {
+        h4 {
           color: white;
         }
       }

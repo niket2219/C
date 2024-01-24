@@ -42,7 +42,7 @@ export default function Contacts({ contacts, changeChat }) {
                     />
                   </div>
                   <div className="username">
-                    <h3>{contact.username}</h3>
+                    <h5>{contact.username}</h5>
                   </div>
                 </div>
               );
@@ -113,7 +113,7 @@ const Container = styled.div`
         }
       }
       .username {
-        h3 {
+        h5 {
           color: white;
         }
       }

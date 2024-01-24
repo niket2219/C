@@ -1,6 +1,7 @@
 const Messages = require("../models/messageModel");
 const Groups = require("../models/groups");
 const grpMsg = require("../models/groupMsgModel");
+const Invites = require("../models/invites");
 
 module.exports.getMessages = async (req, res, next) => {
   try {
@@ -90,13 +91,6 @@ module.exports.allgroups = async (req, res, next) => {
 module.exports.getgrpmsg = async (req, res, next) => {
   try {
     const messages = await grpMsg.find({ grpId: req.params.id });
-
-    // const projectedMessages = messages.map((msg) => {
-    //   return {
-    //     fromSelf: msg.sender.toString() === from,
-    //     message: msg.message.text,
-    //   };
-    // });
     res.json(messages);
   } catch (ex) {
     next(ex);
@@ -105,10 +99,16 @@ module.exports.getgrpmsg = async (req, res, next) => {
 
 module.exports.addToGroup = async (req, res, next) => {
   try {
-    const { user, group_id } = req.body;
-    const grp = await Groups.findOne({ _id: group_id });
-    const data = await grp.update({ $push: { members: user } });
-    res.send(data);
+    const { user, mem, group_id } = req.body;
+    // const grp = await Groups.findOne({ _id: group_id });
+    //const data = await grp.update({ $push: { members: user } });
+    const request = await Invites.create({
+      from: user,
+      to: mem,
+      grpId: group_id,
+    });
+
+    res.json({ status: true });
   } catch (ex) {
     next(ex);
   }
@@ -121,5 +121,35 @@ module.exports.leavegrp = async (req, res, next) => {
     res.send(data);
   } catch (error) {
     next(error);
+  }
+};
+
+module.exports.fetchrequests = async (req, res, next) => {
+  try {
+    const data = await Invites.find({ to: req.params.name });
+    if (data.length > 0) {
+      res.json({ msg: true, data });
+    } else {
+      res.json({ msg: false });
+    }
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.acceptreq = async (req, res, next) => {
+  try {
+    const { user, grpId, status } = req.body;
+    const grp = await Groups.findOne({ _id: grpId });
+    if (status == true) {
+      const data = await grp.update({ $push: { members: user } });
+      const rep = await Invites.deleteOne({ to: user });
+      res.json(data);
+    } else {
+      const rep = await Invites.deleteOne({ to: user });
+      res.json(rep);
+    }
+  } catch (ex) {
+    next(ex);
   }
 };

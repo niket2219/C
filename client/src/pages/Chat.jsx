@@ -9,6 +9,7 @@ import GroupchatContainer from "../components/GroupchatContainer";
 import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome";
 import Groups from "../components/Groups";
+import { Button } from "react-bootstrap";
 
 export default function Chat() {
   const navigate = useNavigate();
@@ -80,14 +81,14 @@ export default function Chat() {
               setchatType("personal");
             }}
           >
-            Chats
+            <span className="text-center">Chats</span>
           </button>
           <button
             onClick={() => {
               setchatType("group");
             }}
           >
-            Groups
+            <span className="text-center">Groups</span>
           </button>
         </div>
         <div className="container">

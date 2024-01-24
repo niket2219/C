@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
-import Logout from "./Logout";
+import { Button } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import Bg from "../assets/chat_bg_img.jpeg";
@@ -78,6 +78,7 @@ export default function ChatContainer({ currentChat, socket }) {
     );
     console.log(res);
     alert("Group left successfully...");
+    window.location.reload(true);
   };
 
   return (
@@ -88,8 +89,9 @@ export default function ChatContainer({ currentChat, socket }) {
             <h3>{currentChat.name}</h3>
           </div>
         </div>
-        <Logout />
-        <button onClick={leavegroup}>leave grp</button>
+        <Button variant="danger" onClick={leavegroup}>
+          Exit Group
+        </Button>
       </div>
       <div className="chat-messages">
         {messages.map((message) => {

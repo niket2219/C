@@ -77,6 +77,7 @@ export default function ChatContainer({ currentChat, socket }) {
       `${leavegroupRoute}/${currentChat._id}/${data.username}`
     );
     console.log(res);
+    alert("Group left successfully...");
   };
 
   return (

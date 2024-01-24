@@ -113,3 +113,13 @@ module.exports.addToGroup = async (req, res, next) => {
     next(ex);
   }
 };
+
+module.exports.leavegrp = async (req, res, next) => {
+  try {
+    const grp = await Groups.findOne({ _id: req.params.id });
+    const data = await grp.update({ $pull: { members: req.params.name } });
+    res.send(data);
+  } catch (error) {
+    next(error);
+  }
+};

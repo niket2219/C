@@ -88,7 +88,7 @@ export default function Register() {
 
   return (
     <>
-      <div className="container">
+      <div className="container" style={{ width: "40rem", height: "auto" }}>
         <div className="design">
           <div className="pill-1 rotate-45"></div>
           <div className="pill-2 rotate-45"></div>

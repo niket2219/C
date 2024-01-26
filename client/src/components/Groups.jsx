@@ -76,7 +76,6 @@ export default function Contacts({ groups, changeChat }) {
         group_id: currentchat._id,
       }
     );
-    console.log(response);
     setshow1(false);
   };
 
@@ -88,6 +87,7 @@ export default function Contacts({ groups, changeChat }) {
     });
     setshow2(false);
     alert("added to group");
+    window.location.reload(true);
   };
   const declinejoinreq = async () => {
     const data = axios.post(`http://localhost:5000/api/messages/acceptreq`, {
@@ -97,6 +97,7 @@ export default function Contacts({ groups, changeChat }) {
     });
     setshow2(false);
     alert("rejected the invite");
+    window.location.reload(true);
   };
 
   return (
@@ -141,7 +142,7 @@ export default function Contacts({ groups, changeChat }) {
                 </div>
               );
             })}
-            <Modal show={show1 && invites}>
+            <Modal show={show1}>
               <Modal.Header closeButton>Enter Group Details</Modal.Header>
               <Modal.Body>
                 <Form.Label htmlFor="useradd">

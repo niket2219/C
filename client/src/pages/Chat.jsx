@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import styled from "styled-components";
-import { allUsersRoute, host } from "../utils/APIRoutes";
+import { allUsersRoute, host, AllGroups } from "../utils/APIRoutes";
 import ChatContainer from "../components/ChatContainer";
 import GroupchatContainer from "../components/GroupchatContainer";
 import Contacts from "../components/Contacts";
@@ -59,9 +59,7 @@ export default function Chat() {
     if (currentUser) {
       if (currentUser.isAvatarImageSet) {
         console.log("getting data....");
-        const data = await axios.get(
-          `http://localhost:5000/api/messages/allgroups/${currentUser.username}`
-        );
+        const data = await axios.get(`${AllGroups}/${currentUser.username}`);
         setgroups(data.data);
       } else {
         navigate("/setAvatar");

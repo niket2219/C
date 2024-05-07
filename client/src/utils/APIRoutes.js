@@ -1,4 +1,4 @@
-export const host = "http://localhost:5000";
+export const host = "https://chat-vista-yg2x.onrender.com";
 export const loginRoute = `${host}/api/auth/login`;
 export const registerRoute = `${host}/api/auth/register`;
 export const logoutRoute = `${host}/api/auth/logout`;
@@ -10,3 +10,10 @@ export const forgot_passwordRoute = `${host}/api/auth/forgot_password`;
 export const verifyOtpRoute = `${host}/api/auth/verifyOtp`;
 export const changePasswordRoute = `${host}/api/auth/changePassword`;
 export const leavegroupRoute = `${host}/api/messages/leavegrp`;
+export const fetchgrprequests = `${host}/api/messages/fetchrequests`;
+export const addGroup = `${host}/api/messages/addgrp`;
+export const addToGroup = `${host}/api/messages/addtogrp`;
+export const acceptRequests = `${host}/api/messages/acceptreq`;
+export const getGrpMsg = `${host}/api/messages/getgrpmsg`;
+export const addGrpMsg = `${host}/api/messages/addgrpMsg`;
+export const AllGroups = `${host}/api/messages/allgroups`;

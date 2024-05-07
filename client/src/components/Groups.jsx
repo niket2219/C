@@ -3,6 +3,12 @@ import styled from "styled-components";
 import Logo from "../assets/brand.png";
 import { Button, Modal, Form } from "react-bootstrap";
 import axios from "axios";
+import {
+  fetchgrprequests,
+  addGroup,
+  addToGroup,
+  acceptRequests,
+} from "../utils/APIRoutes";
 
 export default function Contacts({ groups, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
@@ -27,7 +33,7 @@ export default function Contacts({ groups, changeChat }) {
 
   useEffect(async () => {
     const data = await axios.get(
-      `http://localhost:5000/api/messages/fetchrequests/${
+      `${fetchgrprequests}/${
         JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))
           .username
       }`
@@ -48,7 +54,7 @@ export default function Contacts({ groups, changeChat }) {
     const res = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
     );
-    const data = await axios.post("http://localhost:5000/api/messages/addgrp", {
+    const data = await axios.post(addGroup, {
       name: grpname,
       creator: res.username,
     });
@@ -66,21 +72,18 @@ export default function Contacts({ groups, changeChat }) {
   };
 
   const handleaddUser = async () => {
-    const response = await axios.post(
-      `http://localhost:5000/api/messages/addtogrp`,
-      {
-        user: JSON.parse(
-          localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-        ).username,
-        mem: userTobeAdded,
-        group_id: currentchat._id,
-      }
-    );
+    const response = await axios.post(addToGroup, {
+      user: JSON.parse(
+        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+      ).username,
+      mem: userTobeAdded,
+      group_id: currentchat._id,
+    });
     setshow1(false);
   };
 
   const acceptjoinreq = async () => {
-    const data = axios.post(`http://localhost:5000/api/messages/acceptreq`, {
+    const data = axios.post(acceptRequests, {
       user: invites[0].to,
       grpId: invites[0].grpId,
       status: true,
@@ -90,7 +93,7 @@ export default function Contacts({ groups, changeChat }) {
     window.location.reload(true);
   };
   const declinejoinreq = async () => {
-    const data = axios.post(`http://localhost:5000/api/messages/acceptreq`, {
+    const data = axios.post(acceptRequests, {
       user: invites[0].to,
       grpId: invites[0].grpId,
       status: false,

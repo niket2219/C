@@ -5,7 +5,7 @@ import { Button } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import Bg from "../assets/chat_bg_img.jpeg";
-import { leavegroupRoute } from "../utils/APIRoutes";
+import { leavegroupRoute, getGrpMsg, addGrpMsg } from "../utils/APIRoutes";
 
 export default function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
@@ -13,9 +13,7 @@ export default function ChatContainer({ currentChat, socket }) {
   const [arrivalMessage, setArrivalMessage] = useState(null);
 
   useEffect(async () => {
-    const response = await axios.post(
-      `http://localhost:5000/api/messages/getgrpmsg/${currentChat._id}`
-    );
+    const response = await axios.post(`${getGrpMsg}/${currentChat._id}`);
     setMessages(response.data);
     console.log(messages);
   }, [currentChat]);
@@ -40,14 +38,11 @@ export default function ChatContainer({ currentChat, socket }) {
       from: data._id,
       message: msg,
     });
-    await axios.post(
-      `http://localhost:5000/api/messages/addgrpMsg/${currentChat._id}`,
-      {
-        grpId: currentChat._id,
-        sender: data.username,
-        message: msg,
-      }
-    );
+    await axios.post(`${addGrpMsg}/${currentChat._id}`, {
+      grpId: currentChat._id,
+      sender: data.username,
+      message: msg,
+    });
     const msgs = [...messages];
     msgs.push({ grpId: currentChat._id, sender: data.username, message: msg });
     setMessages(msgs);
